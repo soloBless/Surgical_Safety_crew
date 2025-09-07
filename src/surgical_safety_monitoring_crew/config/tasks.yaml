@@ -1,0 +1,58 @@
+---
+process_video_frames_at_standard_rate:
+  description: |-
+    Connect to and process video frames from {video_feed_url} at the standard 3 FPS rate (every 333ms) - the optimal frame rate for surgical safety monitoring. Handle various video stream protocols including RTSP, HTTP streaming, and IP camera feeds.
+
+    Establish connection to the video URL, extract frames at consistent intervals, normalize frame quality and resolution, and convert to base64 format optimized for object detection models. Ensure stable streaming connection with automatic reconnection for reliable PPE and sterile field monitoring.
+  expected_output: 'Base64 encoded video frames processed at consistent 3 FPS from
+    URL video stream with metadata including: stream connection status, timestamp,
+    frame quality metrics, processing latency, and readiness confirmation for PPE
+    object detection analysis'
+  agent: video_frame_intake_specialist
+detect_ppe_and_surgical_equipment:
+  description: Analyze base64 encoded video frames using advanced object detection
+    models to identify all PPE items including gloves, masks, gowns, surgical instruments,
+    sharps bins, and sterile zones. Generate detailed video display and detection reports with precise
+    bounding boxes, confidence scores, and object classifications for real-time surgical
+    safety monitoring.
+  expected_output: Comprehensive object detection report with bounding box coordinates,
+    confidence scores, PPE compliance status, and detailed classifications for all
+    detected surgical equipment and PPE items
+  agent: ppe_detection_specialist
+  context:
+  - process_video_frames_at_standard_rate
+audit_surgical_safety_compliance:
+  description: Research and apply WHO surgical safety standards, Joint Commission
+    protocols, AORN guidelines, and other authoritative medical body standards. Use
+    these references to audit PPE detection results and identify compliance violations
+    including missing PPE, sterile field breaches, improper instrument placement,
+    and protocol deviations. Generate violation severity scores based on medical evidence.
+  expected_output: Evidence-based compliance audit report citing WHO and professional
+    medical standards, with identified violations, severity levels based on clinical
+    risk, affected areas, and immediate corrective actions required per authoritative
+    guidelines
+  agent: surgical_compliance_rules_auditor
+  context:
+  - detect_ppe_and_surgical_equipment
+anonymize_patient_data:
+  description: Process all video frames, detection reports, and compliance data to
+    redact faces, patient identifiers, and other personally identifiable information.
+    Ensure HIPAA compliance while preserving all safety-relevant information for alert
+    generation.
+  expected_output: HIPAA-compliant, anonymized safety reports and alerts with all
+    personal identifiers removed but safety data intact
+  agent: privacy_compliance_specialist
+  context:
+  - audit_surgical_safety_compliance
+compile_safety_report:
+  description: |-
+    Compile a comprehensive surgical safety report from all collected compliance violations, PPE detection data, and privacy-compliant analysis results. Create detailed documentation including violation summaries, severity assessments, trend analysis, timestamps, affected areas, and evidence-based recommendations for OR management.
+
+    Structure the report with executive summary, incident details, compliance status, risk analysis, and actionable improvement recommendations based on WHO and medical authority guidelines.
+  expected_output: 'Comprehensive surgical safety report in structured format containing:
+    executive summary, detailed violation incidents with timestamps and severity,
+    PPE compliance statistics, sterile field breach analysis, risk assessment, trend
+    identification, and evidence-based recommendations for OR safety improvements'
+  agent: or_safety_report_compiler
+  context:
+  - anonymize_patient_data
